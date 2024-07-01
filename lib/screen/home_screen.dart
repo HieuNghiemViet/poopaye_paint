@@ -1,120 +1,57 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:poopaye_paint/cubit/cat_cubit.dart';
+import 'package:poopaye_paint/model/cat.dart';
+import 'package:poopaye_paint/repositories/cat_repository.dart';
+import 'package:poopaye_paint/screen/cat_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double _sides = 3.0;
-  double _radius = 100.0;
-  double _radians = 0.0;
+  CatCubit catCubit = CatCubit();
+
+  @override
+  void initState() {
+    super.initState();
+    catCubit.fetchCat();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Polygons'),
-      ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: CustomPaint(
-                painter: CustomView(_sides, _radius, _radians),
-                child: Container(),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0),
-              child: Text('Sides'),
-            ),
-            Slider(
-              value: _sides,
-              min: 3.0,
-              max: 10.0,
-              label: _sides.toInt().toString(),
-              divisions: 7,
-              onChanged: (value) {
-                setState(() {
-                  _sides = value;
-                });
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0),
-              child: Text('Size'),
-            ),
-            Slider(
-              value: _radius,
-              min: 10.0,
-              max: MediaQuery.of(context).size.width / 2,
-              onChanged: (value) {
-                setState(() {
-                  _radius = value;
-                });
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0),
-              child: Text('Rotation'),
-            ),
-            Slider(
-              value: _radians,
-              min: 0.0,
-              max: pi,
-              onChanged: (value) {
-                setState(() {
-                  _radians = value;
-                });
-              },
-            ),
-          ],
-        ),
+      appBar: AppBar(),
+      body: BlocProvider(
+        create: (_) => CatCubit(),
+        child: BlocBuilder<CatCubit, CatState>(builder: (context, state) {
+          switch (state) {
+            case CatInitial():
+              return Container();
+            case CatSuccess():
+              return ListView.separated(
+                itemCount: state.cat.breeds?.length ?? 0,
+                itemBuilder: (index, context) {
+                  final cat = state.cat;
+                  return CatItem(
+                    cat: cat,
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Container(height: 10);
+                },
+              );
+            case CatLoading():
+              return const CupertinoActivityIndicator();
+            case CatFailure():
+              return ErrorWidget(state.object);
+          }
+        }),
       ),
     );
-  }
-}
-
-class CustomView extends CustomPainter {
-  final double sides;
-  final double radius;
-  final double radians;
-
-  CustomView(this.sides, this.radius, this.radians);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.teal
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    var path = Path();
-
-    var angle = (pi * 2) / sides;
-
-    Offset center = Offset(size.width / 2, size.height / 2);
-    Offset startPoint = Offset(radius * cos(radians), radius * sin(radians));
-
-    path.moveTo(startPoint.dx + center.dx, startPoint.dy + center.dy);
-
-    for (int i = 1; i <= sides; i++) {
-      double x = radius * cos(radians + angle * i) + center.dx;
-      double y = radius * sin(radians + angle * i) + center.dy;
-      path.lineTo(x, y);
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
   }
 }

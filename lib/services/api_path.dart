@@ -1,3 +1,3 @@
 class ApiPath {
-  static const dog = '';
+  static const cat = '/images/search';
 }
