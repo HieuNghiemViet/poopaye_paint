@@ -1,3 +1,3 @@
 class ApiPath {
-  static const cat = '/images/search';
+  static const meals = '/1/search.php?s=';
 }

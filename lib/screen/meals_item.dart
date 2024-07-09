@@ -4,7 +4,7 @@ import 'package:poopaye_paint/model/meal.dart';
 class MealsItem extends StatelessWidget {
   MealsItem({super.key, required this.meals});
 
-  Meals meals;
+  final Meals meals;
 
   @override
   Widget build(BuildContext context) {
@@ -25,32 +25,27 @@ class MealsItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Text(
-                //   cat.breeds?.first.name ?? "",
-                //   style: Theme.of(context).textTheme.bodyLarge,
-                // ),
-                // const SizedBox(height: 8),
-                // Text(
-                //   cat.breeds?.first.description ?? "",
-                //   maxLines: 2,
-                //   overflow: TextOverflow.ellipsis,
-                // ),
-                // const SizedBox(height: 4),
-                // Text(
-                //   "life_span: ${cat.breeds?.first.lifeSpan}",
-                //   maxLines: 2,
-                //   overflow: TextOverflow.ellipsis,
-                // ),
-                // Text(
-                //   "imperial: ${cat.breeds?.first.weight?.imperial}",
-                //   maxLines: 2,
-                //   overflow: TextOverflow.ellipsis,
-                // ),
-                // Text(
-                //   "metric: ${cat.breeds?.first.weight?.metric}",
-                //   maxLines: 2,
-                //   overflow: TextOverflow.ellipsis,
-                // ),
+                Text(
+                  meals.strMeal ?? "",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  meals.strInstructions ?? "",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Tags: ${meals.strTags}",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  "Ingredient: ${meals.strIngredient1}",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),

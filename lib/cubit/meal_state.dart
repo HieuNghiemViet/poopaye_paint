@@ -1,20 +1,14 @@
-part of 'cat_cubit.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:poopaye_paint/enums.dart';
+import 'package:poopaye_paint/model/meal.dart';
 
-@immutable
-sealed class MealsState {}
+part 'meal_state.freezed.dart';
 
-final class MealsInitial extends MealsState {}
-
-final class MealsLoading extends MealsState {}
-
-final class MealsSuccess extends MealsState {
-  final Meals meals;
-
-  MealsSuccess(this.meals);
-}
-
-final class MealsFailure extends MealsState {
-  final Object object;
-
-  MealsFailure(this.object);
+@freezed
+class MealState with _$MealState {
+  const factory MealState({
+    required ViewState viewStatus,
+    required List<Meals> meals,
+    Object? error,
+  }) = _MealState;
 }
