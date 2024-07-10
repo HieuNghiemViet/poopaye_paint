@@ -10,14 +10,14 @@ class MealsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      height: 150,
+      height: 110,
       child: Row(
         children: [
           if (meals.strMealThumb != null && meals.strMealThumb!.isNotEmpty)
             Image.network(
               meals.strMealThumb!,
-              width: 150,
-              height: 150,
+              width: 100,
+              height: 100,
               fit: BoxFit.cover,
             ),
           const SizedBox(width: 8),
@@ -29,20 +29,14 @@ class MealsItem extends StatelessWidget {
                   meals.strMeal ?? "",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   meals.strInstructions ?? "",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  "Tags: ${meals.strTags}",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  "Ingredient: ${meals.strIngredient1}",
+                const SizedBox(height: 2),
+                Text("Area: ${meals.strArea}",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

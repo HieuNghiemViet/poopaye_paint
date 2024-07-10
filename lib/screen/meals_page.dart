@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poopaye_paint/cubit/meal_state.dart';
 import 'package:poopaye_paint/cubit/meals_cubit.dart';
 import 'package:poopaye_paint/enums.dart';
 import 'package:poopaye_paint/injection_container.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:poopaye_paint/repositories/meals_repository.dart';
 import 'package:poopaye_paint/screen/meals_item.dart';
-import 'package:poopaye_paint/widgets/base_widget.dart';
+import 'package:poopaye_paint/util/debounce.dart';
 
 class MealsPage extends StatelessWidget {
   const MealsPage({super.key});
@@ -29,10 +27,13 @@ class MealsView extends StatefulWidget {
 }
 
 class _MealsViewState extends State<MealsView> {
+  final textController = TextEditingController();
+  final _debounce = Debounce(const Duration(milliseconds: 450));
+
   @override
   void initState() {
     super.initState();
-    context.read<MealsCubit>().fetchMeals();
+    context.read<MealsCubit>().fetchMeals(isShowLoading: true);
   }
 
   @override
@@ -42,23 +43,50 @@ class _MealsViewState extends State<MealsView> {
         title: const Text("Meals"),
       ),
       body: Center(
-        child: BlocBuilder<MealsCubit, MealState>(
-          builder: (context, state) {
-            switch (state.viewStatus) {
-              case ViewState.initial:
-              case ViewState.loading:
-                return const CircularProgressIndicator(color: Colors.red);
-              case ViewState.success:
-                final meals = state.meals;
-                return ListView.builder(
-                  itemCount: meals.length,
-                  itemBuilder: (context, index) =>
-                      MealsItem(meals: meals.elementAt(index)),
-                );
-              case ViewState.failure:
-                return const Text("Oops!");
-            }
-          },
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: textController,
+                onChanged: (name) {
+                  _debounce.call(() {
+                    context
+                        .read<MealsCubit>()
+                        .fetchMeals(kw: name, isShowLoading: true);
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await context.read<MealsCubit>().fetchMeals();
+                },
+                child: BlocBuilder<MealsCubit, MealState>(
+                  builder: (context, state) {
+                    switch (state.viewStatus) {
+                      case ViewState.initial:
+                      case ViewState.loading:
+                        return const Center(
+                          child: CircularProgressIndicator(
+                              color: Colors.red),
+                        );
+                      case ViewState.success:
+                        final meals = state.meals;
+                        return ListView.builder(
+                          itemCount: meals.length,
+                          itemBuilder: (context, index) =>
+                              MealsItem(meals: meals.elementAt(index)),
+                        );
+                      case ViewState.failure:
+                        return const Text("Oops!");
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

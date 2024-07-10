@@ -9,10 +9,12 @@ class MealsCubit extends Cubit<MealState> {
 
   final MealsRepository _catRepository;
 
-  void fetchMeals() async {
+  Future<void> fetchMeals({bool isShowLoading = false, String kw = ""}) async {
     try {
-      emit(state.copyWith(viewStatus: ViewState.loading));
-      final data = await _catRepository.fetchMeals();
+      if (isShowLoading) {
+        emit(state.copyWith(viewStatus: ViewState.loading));
+      }
+      final data = await _catRepository.fetchMeals(kw: kw);
       emit(state.copyWith(viewStatus: ViewState.success, meals: data));
     } catch (e) {
       emit(state.copyWith(viewStatus: ViewState.failure, error: e));

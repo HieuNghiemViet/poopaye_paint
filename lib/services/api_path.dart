@@ -1,3 +1,3 @@
 class ApiPath {
-  static const meals = '/1/search.php?s=';
+  static String meals(String? kw) => '/1/search.php?s=$kw';
 }
